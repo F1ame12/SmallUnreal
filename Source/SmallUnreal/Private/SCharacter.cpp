@@ -52,11 +52,24 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ASCharacter::MoveForward(float Value)
 {
-	AddMovementInput(GetActorForwardVector(), Value);
+	FRotator ControlRotator = GetControlRotation();
+	ControlRotator.Roll = 0.0f;
+	ControlRotator.Pitch = 0.0f;
+
+	AddMovementInput(ControlRotator.Vector(), Value);
 }
 
 void ASCharacter::MoveRight(float Value)
 {
-	AddMovementInput(GetActorRightVector(), Value);
+	FRotator ControlRotator = GetControlRotation();
+	ControlRotator.Roll = 0.0f;
+	ControlRotator.Pitch = 0.0f;
+
+	// X = Forward (Red)
+	// Y = Right (Green)
+	// Z = Up (Blue)
+	FVector RightVector = FRotationMatrix(ControlRotator).GetScaledAxis(EAxis::Y);
+
+	AddMovementInput(RightVector, Value);
 }
 
