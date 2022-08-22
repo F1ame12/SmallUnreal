@@ -14,13 +14,18 @@ AExplosiveBarrel::AExplosiveBarrel()
 	
 
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComp");
+	// Another way to make sure enable simulate physics without use Blueprint.
+// 	StaticMeshComp->SetSimulatePhysics(true);
+// 	StaticMeshComp->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
 	RootComponent = StaticMeshComp;
 
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>("RadialForceComp");
 	RadialForceComp->SetupAttachment(StaticMeshComp);
-	RadialForceComp->Radius = 1000.0f;
-	RadialForceComp->ForceStrength = 100.0f;
-	RadialForceComp->AddCollisionChannelToAffect(ECC_Pawn);
+	RadialForceComp->Radius = 750.0f;
+	RadialForceComp->ForceStrength = 2500.0f;
+	RadialForceComp->bImpulseVelChange = true;
+	RadialForceComp->AddCollisionChannelToAffect(ECC_WorldDynamic);
+
 }
 
 // Called when the game starts or when spawned
@@ -30,23 +35,34 @@ void AExplosiveBarrel::BeginPlay()
 	
 }
 
+void AExplosiveBarrel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	FScriptDelegate delegate;
+	delegate.BindUFunction(this, "OnActorHit");
+	StaticMeshComp->OnComponentHit.Add(delegate);
+}
+
 // Called every frame
 void AExplosiveBarrel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AExplosiveBarrel::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved,
 	FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (Other && Other->IsA<ASMagicProjectile>())
-	{
-		AActor::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+	AActor::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+}
 
+void AExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor->IsA<ASMagicProjectile>())
+	{
 		RadialForceComp->FireImpulse();
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("This message will appear on the screen!"));
+		UE_LOG(LogTemp, Warning, TEXT("Barrel is exploded!"));
 	}
 }
 
