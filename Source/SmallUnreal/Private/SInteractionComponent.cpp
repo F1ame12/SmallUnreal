@@ -2,6 +2,8 @@
 
 
 #include "SInteractionComponent.h"
+#include "SGamePlayInterface.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 USInteractionComponent::USInteractionComponent()
@@ -32,3 +34,32 @@ void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+void USInteractionComponent::PrimaryInteract()
+{
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+
+	AActor* MyOwner = GetOwner();
+
+	FVector EyeLocation;
+	FRotator EyeRotation;
+	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+	FVector End;
+	End = EyeLocation + (EyeRotation.Vector() * 1000);
+
+	FHitResult Hit;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
+
+	AActor* HitActor = Hit.GetActor();
+	if (HitActor)
+	{
+		if (HitActor->Implements<USGamePlayInterface>())
+		{
+			APawn* MyPawn = Cast<APawn>(MyOwner);
+			ISGamePlayInterface::Execute_Interact(HitActor, MyPawn);
+		}
+	}
+	FColor DrawColor = bBlockingHit ? FColor::Green : FColor::Red;
+	DrawDebugLine(GetWorld(), EyeLocation, End, DrawColor, false, 2.0f, 0, 2.0f);
+}

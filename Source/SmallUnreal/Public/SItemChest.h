@@ -39,5 +39,4 @@ public:
 
 public:
 	void Interact_Implementation(APawn* InstigatorPawn) override;
-
 };

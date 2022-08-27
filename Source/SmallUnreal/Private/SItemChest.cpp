@@ -16,6 +16,7 @@ ASItemChest::ASItemChest()
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>("LidMesh");
 	LidMesh->SetupAttachment(BaseMesh);
 
+	// Default degree for lid after chest is opened.
 	TargetPitch = 110.0f;
 }
 

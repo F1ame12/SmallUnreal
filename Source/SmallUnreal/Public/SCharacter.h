@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "SInteractionComponent.h"
 #include "SCharacter.generated.h"
 
 class USpringArmComponent;
@@ -31,6 +32,9 @@ protected:
 	UPROPERTY(VisibleAnyWhere)
 	UCameraComponent* CameraComp;
 
+	UPROPERTY(VisibleAnyWhere)
+	USInteractionComponent* InteractComp;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -38,6 +42,7 @@ protected:
 	void MoveRight(float Value);
 
 	void PrimaryAttack();
+	void PrimaryInteract();
 
 public:	
 	// Called every frame

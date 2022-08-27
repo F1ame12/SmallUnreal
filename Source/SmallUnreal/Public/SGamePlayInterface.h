@@ -25,5 +25,4 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void Interact(APawn* InstigatorPawn);
-
 };
