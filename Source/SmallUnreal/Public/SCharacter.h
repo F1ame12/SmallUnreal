@@ -9,6 +9,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UAnimMontage;
 
 UCLASS()
 class SMALLUNREAL_API ASCharacter : public ACharacter
@@ -21,8 +22,13 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
 
 protected:
 
@@ -42,6 +48,7 @@ protected:
 	void MoveRight(float Value);
 
 	void PrimaryAttack();
+	void PrimaryAttack_TimeElapsed();
 	void PrimaryInteract();
 
 public:	
