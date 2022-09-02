@@ -67,7 +67,7 @@ void USInteractionComponent::PrimaryInteract()
 
 	*/
 	
-	float Radius = 30.0f;
+	float Radius = 50.0f;
 
 	FCollisionShape Shape;
 	Shape.SetSphere(Radius);
@@ -89,7 +89,7 @@ void USInteractionComponent::PrimaryInteract()
 			}
 		}
 		
-		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, DrawColor, false, 2.0f);
+		//DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, DrawColor, false, 2.0f);
 	}
 
 	DrawDebugLine(GetWorld(), EyeLocation, End, DrawColor, false, 2.0f, 0, 2.0f);
