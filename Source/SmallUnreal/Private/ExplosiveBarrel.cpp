@@ -4,6 +4,7 @@
 #include "ExplosiveBarrel.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "SMagicProjectile.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AExplosiveBarrel::AExplosiveBarrel()
@@ -63,6 +64,10 @@ void AExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Oth
 		RadialForceComp->FireImpulse();
 
 		UE_LOG(LogTemp, Warning, TEXT("Barrel is exploded!"));
+		UE_LOG(LogTemp, Log, TEXT("Other log for test! OtherActor: %s. At the game time: %f"), *GetNameSafe(OtherActor), GetWorld()->TimeSeconds);
+
+		FString CombinedString = FString::Printf(TEXT("Hit at location: %s"), *Hit.ImpactPoint.ToString());
+		DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
 	}
 }
 
