@@ -6,6 +6,9 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -54,6 +57,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("Jumping", IE_Pressed, this, &ASCharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -88,19 +92,69 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	FireProjectile(ProjectileClass);
 }
 
 void ASCharacter::PrimaryInteract()
 {
 	InteractComp->PrimaryInteract();
+}
+
+void ASCharacter::BlackHoleAttack()
+{
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_BlackHoleAttack, this, &ASCharacter::BlackHoleAttack_TimeElapsed, 0.2f);
+}
+
+void ASCharacter::BlackHoleAttack_TimeElapsed()
+{
+	FireProjectile(BlackHoleProjectileClass);
+}
+
+void ASCharacter::FireProjectile(UClass* FireProjectileClass)
+{
+	if (FireProjectileClass == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(0, 10.0f, FColor::Red, TEXT("FireProjectileClass is Null!"));
+		return;
+	}
+
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+
+	// try to find the crossshair location and direction that in the game world.
+	FVector CrossShairWorldLocation;
+	FVector CrossShairWorldDirection;
+	if (GEngine && GEngine->GameViewport)
+	{
+		FVector2D ViewportSize;
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+
+		FVector2D CrossShairLocation(ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f);
+		UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(GetWorld(), 0),
+			CrossShairLocation, CrossShairWorldLocation, CrossShairWorldDirection);
+	}
+
+	FVector LineTraceEnd = CrossShairWorldLocation + (CrossShairWorldDirection * 1000);
+	DrawDebugLine(GetWorld(), HandLocation, LineTraceEnd, FColor::Blue, false, 5.0f, 0, 2.0f);
+
+	FHitResult TargetHit;
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(TargetHit, HandLocation, LineTraceEnd, ObjectQueryParams);
+
+
+	FVector TargetLocation = bBlockingHit ? TargetHit.ImpactPoint : LineTraceEnd;
+	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargetLocation);
+
+	FTransform SpawnTM = FTransform(TargetRotation, HandLocation);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+	SpawnParams.Owner = this;
+
+	GetWorld()->SpawnActor<AActor>(FireProjectileClass, SpawnTM, SpawnParams);
 }
 
