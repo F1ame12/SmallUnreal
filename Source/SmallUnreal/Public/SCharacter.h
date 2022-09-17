@@ -29,10 +29,14 @@ protected:
 	TSubclassOf<AActor> BlackHoleProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> TeleportProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 	FTimerHandle TimerHandle_BlackHoleAttack;
+	FTimerHandle TimerHandle_TeleportPoint;
 
 protected:
 
@@ -51,11 +55,19 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
+	// player base attack skill.
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
+
 	void PrimaryInteract();
+
+	// fire black hole skill.
 	void BlackHoleAttack();
 	void BlackHoleAttack_TimeElapsed();
+
+	// teleport player to projectile's point
+	void TeleportPoint();
+	void TeleportPoint_TimeElapsed();
 
 	virtual void FireProjectile(UClass* FireProjectileClass);
 

@@ -4,6 +4,9 @@
 #include "../MagicProjectile/TeleportProjectile.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "ABaseMagicProjectile.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/SphereComponent.h"
+#include "DrawDebugHelpers.h"
 
 ATeleportProjectile::ATeleportProjectile()
 {
@@ -17,16 +20,45 @@ ATeleportProjectile::ATeleportProjectile()
 	EffectComp->Template = EffectParticleSystemObj.Object;
 }
 
+void ATeleportProjectile::OnCompHit_Implementation(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 16, FColor::Green, false, 2.0f);
+
+	OnHitTeleport(GetInstigator());
+}
+
 // Called when the game starts or when spawned
 void ATeleportProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FTimerDelegate TimerDele = FTimerDelegate::CreateUObject(this, &ATeleportProjectile::OnHitTeleport, GetInstigator());
+	GetWorldTimerManager().SetTimer(TeleportEndTimer, TimerDele, 0.2f, false);
 }
 
 void ATeleportProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+}
+
+void ATeleportProjectile::OnHitTeleport(APawn* Player)
+{
+	GetWorldTimerManager().ClearTimer(TeleportEndTimer);
+
+	FTimerDelegate TimerDele = FTimerDelegate::CreateUObject(this, &ATeleportProjectile::OnHitTeleport_TimeElpsed, Player);
+	GetWorldTimerManager().SetTimer(TeleportTimer, TimerDele, 0.2f, false);
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetTransform());
+}
+
+void ATeleportProjectile::OnHitTeleport_TimeElpsed(APawn* Player)
+{
+	if (ensure(Player))
+	{
+		Player->SetActorLocation(GetTransform().GetLocation(), false);
+	}
+
+	Destroy();
 }
 
 // Called every frame

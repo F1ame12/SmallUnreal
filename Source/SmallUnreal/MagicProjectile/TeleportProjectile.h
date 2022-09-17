@@ -17,6 +17,13 @@ class SMALLUNREAL_API ATeleportProjectile : public AABaseMagicProjectile
 public:
 	ATeleportProjectile();
 
+
+	void OnCompHit_Implementation(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+
+protected:
+	FTimerHandle TeleportEndTimer;
+	FTimerHandle TeleportTimer;
+
 protected:
 
 	// Called every frame
@@ -26,4 +33,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void PostInitializeComponents() override;
+
+	virtual void OnHitTeleport(APawn* Player);
+	virtual void OnHitTeleport_TimeElpsed(APawn* Player);
 };

@@ -18,6 +18,11 @@ AABaseMagicProjectile::AABaseMagicProjectile()
 	MeshComp->SetCollisionProfileName("Projectile");
 	RootComponent = MeshComp;
 
+	MeshComp->IgnoreActorWhenMoving(GetInstigator(), true);
+	MeshComp->SetCollisionObjectType(ECC_WorldDynamic);
+	MeshComp->SetCollisionProfileName("Projectile");
+	MeshComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+
 	MoveComp = CreateDefaultSubobject<UProjectileMovementComponent>("MoveComp");
 	MoveComp->InitialSpeed = InitialSpeed;
 	MoveComp->bRotationFollowsVelocity = true;

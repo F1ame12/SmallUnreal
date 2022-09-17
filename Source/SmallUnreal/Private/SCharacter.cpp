@@ -58,6 +58,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Jumping", IE_Pressed, this, &ASCharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
+	PlayerInputComponent->BindAction("TeleportPoint", IE_Pressed, this, &ASCharacter::TeleportPoint);
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -112,9 +113,20 @@ void ASCharacter::BlackHoleAttack_TimeElapsed()
 	FireProjectile(BlackHoleProjectileClass);
 }
 
+void ASCharacter::TeleportPoint()
+{
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_TeleportPoint, this, &ASCharacter::TeleportPoint_TimeElapsed, 0.2f);
+}
+
+void ASCharacter::TeleportPoint_TimeElapsed()
+{
+	FireProjectile(TeleportProjectileClass);
+}
+
 void ASCharacter::FireProjectile(UClass* FireProjectileClass)
 {
-	if (FireProjectileClass == nullptr)
+	if (!ensure(FireProjectileClass))
 	{
 		GEngine->AddOnScreenDebugMessage(0, 10.0f, FColor::Red, TEXT("FireProjectileClass is Null!"));
 		return;
