@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
+class USAttributeComponent;
 
 UCLASS()
 class SMALLUNREAL_API ASCharacter : public ACharacter
@@ -48,6 +49,9 @@ protected:
 
 	UPROPERTY(VisibleAnyWhere)
 	USInteractionComponent* InteractComp;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

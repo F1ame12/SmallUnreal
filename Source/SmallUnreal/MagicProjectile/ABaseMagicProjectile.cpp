@@ -16,12 +16,8 @@ AABaseMagicProjectile::AABaseMagicProjectile()
 
 	MeshComp = CreateDefaultSubobject<USphereComponent>("MeshComp");
 	MeshComp->SetCollisionProfileName("Projectile");
-	RootComponent = MeshComp;
-
 	MeshComp->IgnoreActorWhenMoving(GetInstigator(), true);
-	MeshComp->SetCollisionObjectType(ECC_WorldDynamic);
-	MeshComp->SetCollisionProfileName("Projectile");
-	MeshComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	RootComponent = MeshComp;
 
 	MoveComp = CreateDefaultSubobject<UProjectileMovementComponent>("MoveComp");
 	MoveComp->InitialSpeed = InitialSpeed;
@@ -46,6 +42,10 @@ void AABaseMagicProjectile::PostInitializeComponents()
 	FScriptDelegate HitDelegate;
 	HitDelegate.BindUFunction(this, "OnCompHit");
 	MeshComp->OnComponentHit.Add(HitDelegate);
+
+	FScriptDelegate OverlapDelegate;
+	OverlapDelegate.BindUFunction(this, "OnCompOverlap");
+	MeshComp->OnComponentBeginOverlap.Add(OverlapDelegate);
 }
 
 // Called every frame
@@ -60,5 +60,10 @@ void AABaseMagicProjectile::OnCompHit_Implementation(UPrimitiveComponent* HitCom
 	DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 10.0f, 16, FColor::Green, false, 2.0f);
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Hit.ImpactPoint);
 	Destroy();
+}
+
+void AABaseMagicProjectile::OnCompOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
 }
 

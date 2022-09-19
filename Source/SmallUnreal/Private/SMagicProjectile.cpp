@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "SAttributeComponent.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
@@ -31,6 +32,15 @@ ASMagicProjectile::ASMagicProjectile()
 
 }
 
+void ASMagicProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	FScriptDelegate OverlapDate;
+	OverlapDate.BindUFunction(this, "OnCompOverlap");
+	SphereComp->OnComponentBeginOverlap.Add(OverlapDate);
+}
+
 // Called when the game starts or when spawned
 void ASMagicProjectile::BeginPlay()
 {
@@ -44,4 +54,19 @@ void ASMagicProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void ASMagicProjectile::OnCompOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		if (AttributeComp)
+		{
+			AttributeComp->ApplyHealthChange(-20.0f);
+			Destroy();
+		}
+	}
+}
+
+
 
