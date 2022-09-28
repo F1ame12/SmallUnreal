@@ -31,6 +31,14 @@ ASCharacter::ASCharacter()
 	InteractComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+	
+}
+
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
 // Called when the game starts or when spawned
@@ -171,5 +179,10 @@ void ASCharacter::FireProjectile(UClass* FireProjectileClass)
 	SpawnParams.Owner = this;
 
 	GetWorld()->SpawnActor<AActor>(FireProjectileClass, SpawnTM, SpawnParams);
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	GetMesh()->SetScalarParameterValueOnMaterials("HitTime", GetWorld()->TimeSeconds);
 }
 

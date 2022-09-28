@@ -2,6 +2,7 @@
 
 
 #include "SAttributeComponent.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
@@ -37,6 +38,8 @@ void USAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 bool USAttributeComponent::ApplyHealthChange(float Delta)
 {
 	Health += Delta;
+
+	Health = FMath::Clamp<float>(Health, 0, MaxMealth);
 
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 

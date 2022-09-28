@@ -23,7 +23,13 @@ ASFlashHitBox::ASFlashHitBox()
 	OnHealthChangedDelegate.BindUFunction(this, "OnHealthChanged");
 	AttributeComp->OnHealthChanged.Add(OnHealthChangedDelegate);
 
-	//CubeMesh->SetScalarParameterValueOnMaterials("", AttributeComp->GetHealth());
+}
+
+void ASFlashHitBox::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	CubeMesh->SetScalarParameterValueOnMaterials("GameTime", GetWorld()->TimeSeconds);
 }
 
 // Called when the game starts or when spawned
@@ -35,7 +41,7 @@ void ASFlashHitBox::BeginPlay()
 
 void ASFlashHitBox::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	CubeMesh->SetScalarParameterValueOnMaterials("NewHealth", NewHealth / AttributeComp->GetMaxHealth());
+	//CubeMesh->SetScalarParameterValueOnMaterials("NewHealth", NewHealth / AttributeComp->GetMaxHealth());
 
 	if (Delta < 0.0f)
 	{
@@ -50,4 +56,3 @@ void ASFlashHitBox::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

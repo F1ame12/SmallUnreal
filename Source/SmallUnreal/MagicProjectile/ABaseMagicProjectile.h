@@ -10,6 +10,7 @@ class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
 class UParticleSystem;
+class UAudioComponent;
 
 UCLASS()
 class SMALLUNREAL_API AABaseMagicProjectile : public AActor
@@ -35,6 +36,12 @@ protected:
 	UParticleSystem* HitEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAudioComponent* MovingAudioEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAudioComponent* HitAudioEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialSpeed = 1000.0f;
 
 	// Called when the game starts or when spawned
@@ -51,4 +58,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnCompOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnHitWaveFinished();
 };
