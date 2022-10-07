@@ -28,7 +28,8 @@ void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, u
 
 					bool bLineOfSight = AIController->LineOfSightTo(TargetActor);
 
-					BlackBoardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, bWithinRange);
+					bool bCanAttack = bWithinRange && bLineOfSight;
+					BlackBoardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, bCanAttack);
 				}
 			}
 		}
