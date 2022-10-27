@@ -39,6 +39,9 @@ protected:
 
 protected:
 
+	UFUNCTION(BlueprintCallable)
+	void ControlSpawnBot(bool bShouldPause);
+
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 

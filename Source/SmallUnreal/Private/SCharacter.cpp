@@ -11,6 +11,7 @@
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
 #include "../MagicProjectile/ABaseMagicProjectile.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -28,6 +29,8 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
+
+	NoiseEmitterComp = CreateDefaultSubobject<UPawnNoiseEmitterComponent>("NoiseEmitterComp");
 
 	InteractComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 
@@ -94,6 +97,8 @@ void ASCharacter::MoveRight(float Value)
 	FVector RightVector = FRotationMatrix(ControlRotator).GetScaledAxis(EAxis::Y);
 
 	AddMovementInput(RightVector, Value);
+
+	MakeNoise(1.0f, this, GetActorLocation(), 2.0f);
 }
 
 void ASCharacter::PrimaryAttack()

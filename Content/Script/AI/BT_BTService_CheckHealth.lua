@@ -23,7 +23,6 @@ function M:ReceiveTickAI(OwnerController, ControlledPawn, DeltaSeconds)
     end
 
     --UE.UKismetSystemLibrary.PrintString(ControlledPawn, "ai health = " .. tostring(NowHealth))
-
      
 end
 

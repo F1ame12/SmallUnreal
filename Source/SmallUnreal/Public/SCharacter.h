@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
+class UPawnNoiseEmitterComponent;
 class USAttributeComponent;
 class AABaseMagicProjectile;
 
@@ -50,6 +51,9 @@ protected:
 
 	UPROPERTY(VisibleAnyWhere)
 	USInteractionComponent* InteractComp;
+
+	UPROPERTY(VisibleAnyWhere)
+	UPawnNoiseEmitterComponent* NoiseEmitterComp;
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp;

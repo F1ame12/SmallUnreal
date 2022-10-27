@@ -23,6 +23,18 @@ void ASGameModeBase::StartPlay()
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, BotSpawnInterval, true);
 }
 
+void ASGameModeBase::ControlSpawnBot(bool bShouldPause)
+{
+	if (bShouldPause)
+	{
+		GetWorldTimerManager().PauseTimer(TimerHandle_SpawnBots);
+	}
+	else
+	{
+		GetWorldTimerManager().UnPauseTimer(TimerHandle_SpawnBots);
+	}
+}
+
 void ASGameModeBase::SpawnBotTimerElapsed()
 {
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, BotSpawnPosQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
