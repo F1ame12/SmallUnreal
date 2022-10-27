@@ -20,4 +20,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	float ProjectileDamage = 5.0f;
 };

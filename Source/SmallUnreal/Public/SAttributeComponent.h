@@ -46,4 +46,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMaxHealth() { return MaxMealth; };
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool IsAlive() const;
 };

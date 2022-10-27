@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
+#include "../MagicProjectile/ABaseMagicProjectile.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -159,7 +160,8 @@ void ASCharacter::FireProjectile(UClass* FireProjectileClass)
 	}
 
 	FVector LineTraceEnd = CrossShairWorldLocation + (CrossShairWorldDirection * 1000);
-	DrawDebugLine(GetWorld(), HandLocation, LineTraceEnd, FColor::Blue, false, 5.0f, 0, 2.0f);
+
+	//DrawDebugLine(GetWorld(), HandLocation, LineTraceEnd, FColor::Blue, false, 5.0f, 0, 2.0f);
 
 	FHitResult TargetHit;
 	FCollisionObjectQueryParams ObjectQueryParams;
@@ -178,7 +180,7 @@ void ASCharacter::FireProjectile(UClass* FireProjectileClass)
 	SpawnParams.Instigator = this;
 	SpawnParams.Owner = this;
 
-	GetWorld()->SpawnActor<AActor>(FireProjectileClass, SpawnTM, SpawnParams);
+	AActor* Projectile = GetWorld()->SpawnActor<AActor>(FireProjectileClass, SpawnTM, SpawnParams);
 }
 
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)

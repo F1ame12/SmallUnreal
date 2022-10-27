@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
 class USAttributeComponent;
+class AABaseMagicProjectile;
 
 UCLASS()
 class SMALLUNREAL_API ASCharacter : public ACharacter
@@ -24,13 +25,13 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<AABaseMagicProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> BlackHoleProjectileClass;
+	TSubclassOf<AABaseMagicProjectile> BlackHoleProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> TeleportProjectileClass;
+	TSubclassOf<AABaseMagicProjectile> TeleportProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;

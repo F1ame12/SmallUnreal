@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
+#include "AI/SAICharacter.h"
 
 void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -28,7 +29,12 @@ void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, u
 
 					bool bLineOfSight = AIController->LineOfSightTo(TargetActor);
 
-					bool bCanAttack = bWithinRange && bLineOfSight;
+					ASAICharacter* AICharacter = Cast<ASAICharacter>(AIPawn);
+					FVector WeaptionLocation = AICharacter->GetMesh()->GetSocketLocation("Muzzle_01");
+					// 确保武器发射不会被阻碍
+					bool bShootingBlock = GetWorld()->LineTraceTestByChannel(WeaptionLocation, TargetActor->GetActorLocation(), ECC_Visibility);
+
+					bool bCanAttack = bWithinRange && bLineOfSight && !bShootingBlock;
 					BlackBoardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, bCanAttack);
 				}
 			}

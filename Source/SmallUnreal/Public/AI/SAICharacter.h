@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
+class USAttributeComponent;
+
 UCLASS()
 class SMALLUNREAL_API ASAICharacter : public ACharacter
 {
@@ -14,6 +16,11 @@ class SMALLUNREAL_API ASAICharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ASAICharacter();
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
+	USAttributeComponent* AttrComp;
 
 protected:
 	// Called when the game starts or when spawned

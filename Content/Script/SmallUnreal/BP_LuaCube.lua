@@ -10,18 +10,25 @@
 local M = UnLua.Class()
 
 function M:Initialize(Initializer)
-    
-    UE.UKismetSystemLibrary.PrintString(nil, self:GenSomeStr())
+
 end
 
 function M:GenSomeStr()
-    return "hhhhhhhhhh"
+    return "hhhhhhhhhh cube is nil"
 end
--- function M:UserConstructionScript()
--- end
+function M:UserConstructionScript()
+    --M.NewComp = self:AddComponentByClass(UE.UClass:GetClass("Engine/"), false, self.Cube:GetTransform(), false)
+    --M.NewComp:K2_AttachTo(self.Cube)
+end
 
--- function M:ReceiveBeginPlay()
--- end
+function M:ReceiveBeginPlay()
+    local SelfActor = self.Cube:GetOwner()
+    local DebugStr = self:GenSomeStr()
+    if (SelfActor) then
+        DebugStr = "Hi im ready to do something!"
+    end
+    UE.UKismetSystemLibrary.PrintString(nil, DebugStr)
+end
 
 -- function M:ReceiveEndPlay()
 -- end

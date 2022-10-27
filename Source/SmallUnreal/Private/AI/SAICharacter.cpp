@@ -2,6 +2,7 @@
 
 
 #include "AI/SAICharacter.h"
+#include "SAttributeComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -9,13 +10,15 @@ ASAICharacter::ASAICharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	AttrComp = CreateDefaultSubobject<USAttributeComponent>("AttrComp");
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 // Called when the game starts or when spawned
 void ASAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

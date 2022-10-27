@@ -23,6 +23,8 @@ public:
 
 protected:
 
+protected:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* MeshComp;
 
@@ -42,12 +44,19 @@ protected:
 	UAudioComponent* HitAudioEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InitialSpeed = 1000.0f;
+	float Speed = 1000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DamageValue = 20.f;
+
+	FTimerHandle DestoryTimerHandle;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void PostInitializeComponents() override;
+
+	void ProcessHitEvent(AActor* OtherActor);
 
 public:	
 	// Called every frame
@@ -61,4 +70,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnHitWaveFinished();
+
+	UFUNCTION(BlueprintCallable)
+	void SetDamage(float Value);
+
+	UFUNCTION(BlueprintCallable)
+	void SetSpeed(float NewSpeed);
 };

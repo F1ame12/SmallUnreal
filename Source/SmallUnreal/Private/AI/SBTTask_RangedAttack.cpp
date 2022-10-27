@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "../MagicProjectile/ABaseMagicProjectile.h"
 
 EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -37,7 +38,13 @@ EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& O
 
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, TargetDirection, Params);
+		Params.Instigator = AIController->GetPawn();
+		AActor* ProjectileActor = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, TargetDirection, Params);
+		if (ProjectileActor)
+		{
+			AABaseMagicProjectile* projectile = Cast<AABaseMagicProjectile>(ProjectileActor);
+			if (projectile) projectile->SetDamage(ProjectileDamage);
+		}
 	}
 
 	return EBTNodeResult::Failed;
