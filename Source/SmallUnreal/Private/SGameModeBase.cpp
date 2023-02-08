@@ -10,10 +10,13 @@
 #include "AI/SAICharacter.h"
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
+#include "SCharacter.h"
+#include "CreditComponent.h"
 
 ASGameModeBase::ASGameModeBase()
 {
 	BotSpawnInterval = 0.2f;
+	BotKillCredit = 10;
 }
 
 void ASGameModeBase::StartPlay()
@@ -92,6 +95,22 @@ void ASGameModeBase::SpawnBotOnQueryComplete(UEnvQueryInstanceBlueprintWrapper* 
 
 		DrawDebugSphere(GetWorld(), Locations[0], 6.0f, 8, FColor::Green, true);
 	}
+}
 
-	
+void ASGameModeBase::OnActorKilled(AActor* KilledActor, AActor* Killer)
+{
+	if (KilledActor && KilledActor->IsA(ASAICharacter::StaticClass()))
+	{
+		if (Killer && Killer->IsA(ASCharacter::StaticClass()))
+		{
+			ASCharacter* Player = Cast<ASCharacter>(Killer);
+			
+
+			UCreditComponent* CreditComp = UCreditComponent::GetCreditComponent(Killer);
+			if (CreditComp)
+			{
+				CreditComp->ChangeCreditAmount(BotKillCredit);
+			}
+		}
+	}
 }

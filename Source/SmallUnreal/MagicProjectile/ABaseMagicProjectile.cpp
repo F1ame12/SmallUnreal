@@ -65,16 +65,9 @@ void AABaseMagicProjectile::PostInitializeComponents()
 	HitAudioEffect->OnAudioFinished.AddDynamic(this, &AABaseMagicProjectile::OnHitWaveFinished);
 }
 
-// Called every frame
-void AABaseMagicProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AABaseMagicProjectile::OnCompHit_Implementation(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor != GetInstigator<AActor>() && !OtherActor->IsA(AABaseMagicProjectile::StaticClass()))
+	if (IsValidHitActor(OtherActor))
 	{
 		ProcessHitEvent(OtherActor);
 	}
@@ -82,7 +75,7 @@ void AABaseMagicProjectile::OnCompHit_Implementation(UPrimitiveComponent* HitCom
 
 void AABaseMagicProjectile::OnCompOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != GetInstigator<AActor>() && !OtherActor->IsA(AABaseMagicProjectile::StaticClass()))
+	if (IsValidHitActor(OtherActor))
 	{
 		ProcessHitEvent(OtherActor);
 	}
@@ -123,11 +116,27 @@ void AABaseMagicProjectile::ProcessHitEvent(AActor* OtherActor)
 
 	if (OtherActor)
 	{
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComponent(OtherActor);
 		if (AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-DamageValue);
+			if (AttributeComp->IsAlive())
+			{
+				AttributeComp->ApplyHealthChange(GetInstigator(), -DamageValue);
+			}
 		}
 	}
+}
+
+bool AABaseMagicProjectile::IsValidHitActor_Implementation(AActor* OtherActor)
+{
+	if (OtherActor == nullptr) return false;
+
+	if (OtherActor == this) return false;
+
+	if (OtherActor->IsA<AABaseMagicProjectile>()) return false;
+
+	if (OtherActor == GetInstigator()) return false;
+
+	return true;
 }
 

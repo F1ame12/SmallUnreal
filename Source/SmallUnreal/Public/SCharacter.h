@@ -13,6 +13,7 @@ class UAnimMontage;
 class UPawnNoiseEmitterComponent;
 class USAttributeComponent;
 class AABaseMagicProjectile;
+class UCreditComponent;
 
 UCLASS()
 class SMALLUNREAL_API ASCharacter : public ACharacter
@@ -57,6 +58,9 @@ protected:
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Credit")
+	UCreditComponent* CreditComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -7,6 +7,7 @@
 #include "SAICharacter.generated.h"
 
 class USAttributeComponent;
+class UPawnSensingComponent;
 
 UCLASS()
 class SMALLUNREAL_API ASAICharacter : public ACharacter
@@ -17,20 +18,23 @@ public:
 	// Sets default values for this character's properties
 	ASAICharacter();
 
+	void PostInitializeComponents() override;
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	USAttributeComponent* AttrComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	UPawnSensingComponent* SenseComp;
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void SetTargetActor(AActor* Pawn);
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UFUNCTION()
+	void OnPawnSeen(APawn* Pawn);
 
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 };

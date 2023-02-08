@@ -21,6 +21,9 @@ public:
 
 	ASGameModeBase();
 
+	UFUNCTION()
+	void OnActorKilled(AActor* KilledActor, AActor* Killer);
+
 protected:
 
 	FTimerHandle TimerHandle_SpawnBots;
@@ -37,6 +40,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "BotSpawn")
 	UCurveFloat* DifficultyCurve;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Credit")
+	float BotKillCredit;
+
 protected:
 
 	UFUNCTION(BlueprintCallable)
@@ -47,6 +53,8 @@ protected:
 
 	UFUNCTION()
 	void SpawnBotOnQueryComplete(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	
 
 public:
 	void StartPlay() override;

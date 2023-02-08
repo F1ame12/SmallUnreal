@@ -14,32 +14,20 @@ class SMALLUNREAL_API USAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	USAttributeComponent();
-
-protected:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float MaxMealth;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float Health;
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Attributes")
 	FOnHealthChanged OnHealthChanged;
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:	
+	// Sets default values for this component's properties
+	USAttributeComponent();
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	bool ApplyHealthChange(float Delta);
+	static USAttributeComponent* GetAttributeComponent(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealth() { return Health; };
@@ -49,4 +37,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool IsAlive() const;
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float MaxMealth;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float Health;
 };

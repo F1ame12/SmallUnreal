@@ -3,6 +3,7 @@
 
 #include "SAttributeComponent.h"
 #include "Math/UnrealMathUtility.h"
+#include "SGameModeBase.h"
 
 // Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
@@ -16,32 +17,38 @@ USAttributeComponent::USAttributeComponent()
 	Health = MaxMealth;
 }
 
-
-// Called when the game starts
-void USAttributeComponent::BeginPlay()
+USAttributeComponent* USAttributeComponent::GetAttributeComponent(AActor* Actor)
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	if (Actor)
+	{
+		return Cast<USAttributeComponent>(Actor->GetComponentByClass(USAttributeComponent::StaticClass()));
+	}
+	return nullptr;
 }
 
-
-// Called every frame
-void USAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	// 已经死亡 无法继续承受伤害
+	if (Health <= 0 && Delta < 0) return false;
 
-	// ...
-}
-
-bool USAttributeComponent::ApplyHealthChange(float Delta)
-{
 	Health += Delta;
-
 	Health = FMath::Clamp<float>(Health, 0, MaxMealth);
+	
+	if (Health <= 0)
+	{
+		ASGameModeBase* GameMode = Cast<ASGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (GameMode)
+		{
+			GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("GameMode is null."))
+		}
+		
+	}
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, Delta);
 
 	return true;
 }

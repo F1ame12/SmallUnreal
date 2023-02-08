@@ -12,6 +12,7 @@
 #include "SAttributeComponent.h"
 #include "../MagicProjectile/ABaseMagicProjectile.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "CreditComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -35,7 +36,8 @@ ASCharacter::ASCharacter()
 	InteractComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
-	
+
+	CreditComp = CreateDefaultSubobject<UCreditComponent>("CreditComp");
 }
 
 void ASCharacter::PostInitializeComponents()

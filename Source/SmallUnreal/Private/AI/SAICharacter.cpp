@@ -3,6 +3,12 @@
 
 #include "AI/SAICharacter.h"
 #include "SAttributeComponent.h"
+#include "Perception/PawnSensingComponent.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BrainComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "CreditComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -13,25 +19,59 @@ ASAICharacter::ASAICharacter()
 	AttrComp = CreateDefaultSubobject<USAttributeComponent>("AttrComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	SenseComp = CreateDefaultSubobject<UPawnSensingComponent>("SenseComp");
 }
 
-// Called when the game starts or when spawned
-void ASAICharacter::BeginPlay()
+void ASAICharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
+
+	SenseComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
+	AttrComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
 }
 
-// Called every frame
-void ASAICharacter::Tick(float DeltaTime)
+void ASAICharacter::SetTargetActor(AActor* Target)
 {
-	Super::Tick(DeltaTime);
+	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	{
+		UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
+		if (BlackboardComp)
+		{
+			BlackboardComp->SetValueAsObject("TargetActor", Target);
 
+			//UE_LOG(LogTemp, Log, TEXT("AI %s find player!"), *GetName());
+		}
+	}
 }
 
-// Called to bind functionality to input
-void ASAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	SetTargetActor(Pawn);
 }
 
+void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (Delta < 0.0f && NewHealth <= 0.0f)
+	{
+		if (AAIController* AIController = Cast<AAIController>(GetController()))
+		{
+			AIController->GetBrainComponent()->StopLogic("Killed");
+
+			GetMesh()->SetAllBodiesSimulatePhysics(true);
+			GetMesh()->SetCollisionProfileName("RagDoll");
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+
+			SetLifeSpan(10.0f);
+		}
+	}
+	else
+	{
+		if (InstigatorActor != this)
+		{
+			SetTargetActor(InstigatorActor);
+		}
+	}
+}
